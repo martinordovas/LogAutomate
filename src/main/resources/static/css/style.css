@@ -1,0 +1,14 @@
+/* Importamos JetBrains Mono como base/fallback desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+@theme {
+    /* Añadimos tu pila de fuentes Nerd Font custom al ecosistema de Tailwind v4 */
+    --font-nerd: "JetBrainsMono Nerd Font", "FiraCode Nerd Font", "JetBrains Mono", "Fira Code", monospace;
+}
+
+/* Estilo sutil de rejilla de fondo */
+.bg-grid {
+    background-size: 40px 40px;
+    background-image: linear-gradient(to right, rgba(63, 63, 70, 0.04) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(63, 63, 70, 0.04) 1px, transparent 1px);
+}

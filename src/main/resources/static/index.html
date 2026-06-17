@@ -1,140 +1,136 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LogAutomate | IA Analyzer</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-    <style>
-        #output h3 { @apply text-xl font-bold mt-6 first:mt-0 mb-3 flex items-center gap-2 text-zinc-100; }
-        #output ul { @apply list-disc pl-6 space-y-2 my-3 text-zinc-300; }
-        #output strong { @apply text-zinc-100 font-semibold; }
-        #output pre { @apply bg-zinc-950 p-4 rounded-lg my-4 border border-zinc-800 overflow-x-auto font-mono text-zinc-300 shadow-inner; }
-        #output code { @apply text-lime-400 font-mono text-xs bg-zinc-950/50 px-1.5 py-0.5 rounded border border-zinc-800/50; }
-        #output pre code { @apply text-zinc-300 p-0 bg-transparent border-none text-sm; }
-    </style>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="bg-zinc-950 text-zinc-200 min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
 
-    <div class="w-full max-w-6xl bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-2xl transition-all duration-300">
-        
-        <header class="mb-6 text-center md:text-left border-b border-zinc-800 pb-4">
-            <h1 class="text-3xl font-black text-lime-400 tracking-tight">⚡ LogAutomate</h1>
-            <p class="text-zinc-400 text-sm mt-1">Automatización y análisis de logs con Inteligencia Artificial</p>
-        </header>
+<body class="bg-zinc-950 text-zinc-200 min-h-screen bg-grid font-nerd antialiased relative overflow-x-hidden">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            
-            <div class="flex flex-col h-full justify-between">
-                <div>
-                    <div class="flex flex-col items-center justify-center border-2 border-dashed border-zinc-700 hover:border-lime-500 rounded-lg p-8 transition-colors cursor-pointer group h-64" id="dropzone">
+    <div
+        class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[400px] bg-gradient-to-b from-lime-500/10 via-slate-900/5 to-transparent rounded-full blur-3xl pointer-events-none z-0">
+    </div>
+
+    <div class="lg:hidden fixed top-4 left-4 z-50">
+        <button id="btnMenu"
+            class="bg-zinc-900/90 border border-zinc-800 p-2.5 rounded-xl text-lime-400 hover:text-lime-300 focus:outline-none shadow-xl backdrop-blur-md cursor-pointer">
+            <svg id="iconMenu" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </button>
+    </div>
+
+    <div class="flex min-h-screen relative z-10">
+
+        <aside id="sidebar"
+            class="fixed inset-y-0 left-0 z-40 w-72 bg-zinc-900/95 lg:bg-zinc-900/40 backdrop-blur-md border-r border-zinc-800/60 p-5 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between">
+            <div>
+                <div class="flex items-center gap-3 mb-8 px-2 mt-12 lg:mt-2">
+                    <span class="text-2xl">⚡</span>
+                    <div>
+                        <h1 class="text-xl font-black text-lime-400 tracking-tight">LogAutomate</h1>
+                        <p class="text-[11px] text-zinc-500 font-medium tracking-wide uppercase">AI Analyzer v1.0</p>
+                    </div>
+                </div>
+
+                <h2 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider px-2 mb-3">Historial de Logs
+                </h2>
+                <div id="historyList" class="space-y-1 overflow-y-auto max-h-[calc(100vh-220px)] pr-1"></div>
+            </div>
+
+            <div class="border-t border-zinc-800/60 pt-4 px-2 text-center text-xs text-zinc-500">
+                Desarrollado con Spring Boot & IA
+            </div>
+        </aside>
+
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-30 hidden lg:hidden"></div>
+
+        <main class="flex-1 min-w-0 lg:ml-72 p-4 md:p-8 flex flex-col items-center justify-start pt-20 lg:pt-12 pb-12">
+            <div
+                class="w-full max-w-3xl bg-zinc-900/65 border border-zinc-800/60 rounded-2xl p-6 md:p-8 shadow-2xl backdrop-blur-xl relative transition-all duration-300">
+
+                <div class="flex justify-between items-start gap-4 mb-6 border-b border-zinc-800/30 pb-4">
+                    <p class="text-zinc-400 text-sm text-left leading-relaxed">
+                        Automatización y diagnóstico de errores con Inteligencia Artificial
+                    </p>
+                    <div class="flex-shrink-0 min-h-[40px] flex items-center">
+                        <button id="btnCloseAnalysis"
+                            class="hidden p-2 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700 text-zinc-400 hover:text-zinc-200 transition-all cursor-pointer"
+                            title="Limpiar y cerrar análisis">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="uploadSection" class="transition-all duration-300">
+                    <div class="flex flex-col items-center justify-center border-2 border-dashed border-zinc-800 bg-zinc-950/20 rounded-xl p-8 transition-all cursor-pointer group"
+                        id="dropzone">
                         <input type="file" id="fileInput" class="hidden" accept=".log,.txt">
-                        <svg class="w-12 h-12 text-zinc-500 group-hover:text-lime-400 mb-3 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                        </svg>
-                        <p class="text-zinc-300 font-medium text-center" id="fileNameDisplay">Haz clic para seleccionar o arrastra un archivo .log</p>
+                        <div id="iconContainer"
+                            class="p-4 rounded-full bg-zinc-900 border border-zinc-800 group-hover:border-lime-500/30 group-hover:bg-zinc-900/50 transition-all mb-4 shadow-inner">
+                            <svg class="w-8 h-8 text-zinc-500 group-hover:text-lime-400 transition-colors" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                </path>
+                            </svg>
+                        </div>
+                        <p class="text-zinc-300 font-medium text-center text-sm md:text-base" id="fileNameDisplay">Haz
+                            clic para seleccionar o arrastra un archivo .log</p>
                     </div>
 
-                    <button id="btnAnalyze" class="w-full mt-4 bg-lime-500 hover:bg-lime-400 text-zinc-950 font-bold py-3 px-4 rounded-lg transition-colors shadow-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <button id="btnAnalyze"
+                        class="w-full mt-4 bg-lime-500 hover:bg-lime-400 text-zinc-950 font-black py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-lime-500/10 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed uppercase tracking-wide text-sm"
+                        disabled>
                         Analizar Log
                     </button>
                 </div>
-            </div>
 
-            <div id="resultContainer" class="border-t md:border-t-0 md:border-l border-zinc-800 pt-6 md:pt-0 md:pl-6 h-full">
-                <h2 class="text-lg font-bold text-zinc-100 mb-3 flex items-center gap-2">
-                    <span id="statusIndicator" class="w-2 h-2 rounded-full bg-zinc-600 transition-colors duration-300"></span>
-                    Análisis de la IA:
-                </h2>
-                
-                <div id="output" class="bg-zinc-950/40 p-4 rounded-lg text-sm text-zinc-300 overflow-y-auto max-h-[500px] border border-zinc-800/60 whitespace-normal">
-                    
-                    <div id="placeholderState" class="flex flex-col items-center justify-center text-center p-6 h-52 text-zinc-500">
-                        <svg class="w-10 h-10 mb-3 text-zinc-600 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <p class="text-sm font-semibold text-zinc-400">Cuadro de reporte inactivo</p>
-                        <p class="text-xs text-zinc-500 max-w-xs mt-1">Sube un volcado de líneas en el panel izquierdo para inicializar el diagnóstico inteligente.</p>
-                    </div>
-
+                <div id="resultContainer" class="hidden mt-6 border-t border-zinc-800/60 pt-6">
+                    <h2 class="text-lg font-bold text-zinc-100 mb-3 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-lime-400 animate-pulse"></span>
+                        Informe del Diagnóstico:
+                    </h2>
+                    <pre id="output"
+                        class="bg-zinc-950 p-4 rounded-xl text-sm text-zinc-300 overflow-x-auto whitespace-pre-wrap border border-zinc-800/80 font-mono leading-relaxed shadow-inner"></pre>
                 </div>
             </div>
-
+        </main>
+    </div>
+    <div id="deleteModal"
+        class="fixed inset-0 bg-black/75 backdrop-blur-xs z-50 flex items-center justify-center hidden">
+        <div
+            class="bg-zinc-900 border border-zinc-800/80 p-6 rounded-2xl max-w-sm w-full mx-4 shadow-2xl relative transform transition-all">
+            <h3 class="text-lg font-bold text-zinc-100 mb-2 flex items-center gap-2">
+                <span class="text-red-400">⚠️</span> ¿Eliminar análisis?
+            </h3>
+            <p class="text-sm text-zinc-400 mb-6 leading-relaxed">
+                Esta acción no se puede deshacer. Se borrará permanentemente el informe de diagnóstico generado por la
+                IA.
+            </p>
+            <div class="flex justify-end gap-3">
+                <button id="btnCancelDelete"
+                    class="px-4 py-2 text-xs font-bold rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 transition-all cursor-pointer uppercase tracking-wider">
+                    Cancelar
+                </button>
+                <button id="btnConfirmDelete"
+                    class="px-4 py-2 text-xs font-black rounded-xl bg-red-500/15 hover:bg-red-500 text-red-400 hover:text-zinc-950 border border-red-500/30 transition-all cursor-pointer uppercase tracking-wider">
+                    Eliminar
+                </button>
+            </div>
         </div>
     </div>
-
-    <script>
-        const dropzone = document.getElementById('dropzone');
-        const fileInput = document.getElementById('fileInput');
-        const btnAnalyze = document.getElementById('btnAnalyze');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const output = document.getElementById('output');
-        const statusIndicator = document.getElementById('statusIndicator');
-
-        dropzone.addEventListener('click', () => fileInput.click());
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                fileNameDisplay.textContent = e.target.files[0].name;
-                btnAnalyze.disabled = false;
-            }
-        });
-
-        btnAnalyze.addEventListener('click', async () => {
-            const file = fileInput.files[0];
-            if (!file) return;
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            // Bloquear controles de envío
-            btnAnalyze.disabled = true;
-            btnAnalyze.textContent = 'Analizando con IA...';
-            
-            // 🔄 1. CAMBIAR INDICADOR A MODO ESPERA (Amarillo parpadeante)
-            statusIndicator.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
-            
-            // 🔄 2. INYECTAR SPINNER DE CARGA EN EL OUTPUT
-            output.innerHTML = `
-                <div class="flex flex-col items-center justify-center text-center p-6 h-52 text-lime-400">
-                    <svg class="animate-spin h-8 w-8 mb-3 text-lime-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <p class="text-sm font-medium text-zinc-300">Analizando telemetría...</p>
-                    <p class="text-xs text-zinc-500 mt-1">Filtrando trazas críticas y generando diagnóstico</p>
-                </div>
-            `;
-            
-            try {
-                const response = await fetch('/api/v1/analyzer/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.text();
-                
-                // 🔄 3. CAMBIAR INDICADOR A ÉXITO (Verde activo)
-                statusIndicator.className = "w-2 h-2 rounded-full bg-lime-400 animate-pulse";
-                
-                // Renderizar el Markdown definitivo sustituyendo al spinner
-                output.innerHTML = marked.parse(data); 
-                
-            } catch (error) {
-                statusIndicator.className = "w-2 h-2 rounded-full bg-red-500";
-                output.innerHTML = `
-                    <div class="p-4 bg-red-950/30 border border-red-900/50 rounded-lg text-red-400">
-                        <strong class="font-bold">❌ Error crítico en el análisis:</strong>
-                        <p class="text-xs text-red-500/90 mt-1">${error.message}</p>
-                    </div>
-                `;
-            } finally {
-                btnAnalyze.disabled = false;
-                btnAnalyze.textContent = 'Analizar Log';
-            }
-        });
-    </script>
+    <script src="/js/app.js"></script>
 </body>
+
 </html>
